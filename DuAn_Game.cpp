@@ -45,11 +45,10 @@ clock_t hoaMaExpire = 0;
 int kyLuc = 0;
 int thucAnConLai = 0;
 
-// =================================================================
-// PHAN 1: CAC THUAT TOAN DO HOA CO BAN (CHUAN CHUONG 2)
-// =================================================================
-
+// PHAN 1: CAC THUAT TOAN DO HOA CO BAN
 // 1. Thuat toan Bresenham ve doan thang
+// Hàm vẽ đường thẳng sử dụng thuật toán Bresenham. 
+// Tối ưu hóa việc tính toán tọa độ điểm tiếp theo trên đường thẳng chỉ dùng phép toán số nguyên.
 void veDuongThang(int x1, int y1, int x2, int y2, int color) {
     int dx = abs(x2 - x1), dy = abs(y2 - y1);
     int stepX = (x1 < x2) ? 1 : -1, stepY = (y1 < y2) ? 1 : -1;
@@ -85,7 +84,7 @@ void veDuongTron(int xc, int yc, int r, int color) {
     }
 }
 
-// 4. Thuat toan To mau De quy (Flood Fill)
+// 4. Thuat toan To mau De quy
 void toMauDeQuy(int x, int y, int mauTo, int mauNenCu) {
     int mauHienTai = getpixel(x, y);
     if (mauHienTai == mauNenCu && mauHienTai != mauTo) {
@@ -97,11 +96,8 @@ void toMauDeQuy(int x, int y, int mauTo, int mauNenCu) {
     }
 }
 
-// =================================================================
-// PHAN 2: THUAT TOAN FRACTAL (CHUAN CHUONG 3)
-// =================================================================
-
-// 5. Thuat toan ve Cay Fractal (De quy trang tri UI)
+// PHAN 2: THUAT TOAN FRACTAL 
+// 5. Thuat toan ve Cay Fractal
 void veCayFractal(int x, int y, float goc, int chieuDai, int n, int color) {
     if (n == 0) return; // Dieu kien dung
     
@@ -110,12 +106,12 @@ void veCayFractal(int x, int y, float goc, int chieuDai, int n, int color) {
     
     veDuongThang(x, y, x2, y2, color);
     
-    // De quy re 2 nhanh tich cuc (Goc toa ra 0.5 radian)
+    // De quy re 2 nhanh tich cuc
     veCayFractal(x2, y2, goc - 0.5, chieuDai * 0.75, n - 1, color);
     veCayFractal(x2, y2, goc + 0.5, chieuDai * 0.75, n - 1, color);
 }
 
-// 6. Thuat toan ve Duong cong Koch (Ho tro tao Bong Tuyet)
+// 6. Thuat toan ve Duong cong Koch
 void veDuongKoch(int n, float x1, float y1, float x2, float y2, int color) {
     if (n == 0) {
         veDuongThang((int)x1, (int)y1, (int)x2, (int)y2, color);
@@ -126,7 +122,7 @@ void veDuongKoch(int n, float x1, float y1, float x2, float y2, int color) {
         float xA = x1 + dx; float yA = y1 + dy;
         float xC = x1 + 2 * dx; float yC = y1 + 2 * dy;
         
-        // Tinh toa do dinh B (Phep xoay 60 do)
+        // Tinh toa do dinh B
         float xB = xA + dx * 0.5 + dy * 0.866025; 
         float yB = yA - dx * 0.866025 + dy * 0.5;
         
@@ -137,7 +133,7 @@ void veDuongKoch(int n, float x1, float y1, float x2, float y2, int color) {
     }
 }
 
-// Duong cong C (C-Curve)
+// Duong cong C
 void veDuongCongC(int n, float x1, float y1, float x2, float y2, int color) {
     if (n == 0) {
         veDuongThang((int)x1, (int)y1, (int)x2, (int)y2, color);
@@ -149,7 +145,7 @@ void veDuongCongC(int n, float x1, float y1, float x2, float y2, int color) {
     }
 }
 
-// Duong cong Rong (Dragon Curve)
+// Duong cong Rong
 void veDuongCongRong(int n, float x1, float y1, float x2, float y2, int sign, int color) {
     if (n == 0) {
         veDuongThang((int)x1, (int)y1, (int)x2, (int)y2, color);
@@ -161,9 +157,9 @@ void veDuongCongRong(int n, float x1, float y1, float x2, float y2, int sign, in
     }
 }
 
-// 7. Thuat toan tao Bong Tuyet Koch (Thuc an lon)
+// 7. Thuat toan tao Bong Tuyet Koch
 void veBongTuyetKoch(int x, int y, int size, int n, int color) {
-    float h = size * 0.866025; // Chieu cao tam giac deu
+    float h = size * 0.866025;
     float x1 = x, y1 = y - size;
     float x2 = x - h, y2 = y + size / 2.0;
     float x3 = x + h, y3 = y + size / 2.0;
@@ -174,10 +170,7 @@ void veBongTuyetKoch(int x, int y, int size, int n, int color) {
     veDuongKoch(n, x3, y3, x2, y2, color);
 }
 
-// =================================================================
 // PHAN 3: VE NHAN VAT VA VAT PHAM TRONG GAME
-// =================================================================
-
 void drawPacman(int x, int y, int huong) {
     int r = 20;
     for(int i = y - 21; i <= y + 21; i++) veDuongThang(x - 21, i, x + 21, i, MAU_DEN); // Quet nen
@@ -185,7 +178,6 @@ void drawPacman(int x, int y, int huong) {
     veDuongTron(x, y, r, MAU_VANG);
 
     // Hieu ung dong mo mieng dua tren clock()
-    // Cu 100ms se chuyen 1 frame: 0(Dong) -> 1(Nua mo) -> 2(Mo to) -> 3(Nua mo)
     int frame = (clock() / 100) % 4;
     int dxMouth, dyMouth;
     if (frame == 0) { dxMouth = 20; dyMouth = 1; }
@@ -208,6 +200,7 @@ void drawPacman(int x, int y, int huong) {
     else if (huong == 3) for(int i=y-21; i<=y-dxMouth; i++) veDuongThang(x-dyMouth, i, x+dyMouth, i, MAU_DEN);
 }
 
+// Hàm vẽ con ma với các chi tiết: phần thân tròn, mắt, và phần chân lượn sóng.
 void drawGhost(int x, int y, int color) {
     for(int i = y - 16; i <= y + 21; i++) veDuongThang(x - 16, i, x + 16, i, MAU_DEN); // Quet nen
     veDuongTron(x, y, 15, color); 
@@ -223,12 +216,14 @@ void drawGhost(int x, int y, int color) {
     veDuongTron(x + 4, y + 3, 1, MAU_XANH_DUONG); putpixel(x + 4, y + 3, MAU_XANH_DUONG);
 }
 
+// Hàm vẽ thức ăn (hạt nhỏ). Kích thước hạt sẽ to hơn nếu đang trong thời gian hiệu lực của "thức ăn lớn".
 void drawFood(int x, int y) {
-    int r = (clock() < thucAnLonExpire) ? 5 : 3; // 3 * 1.5 = 4.5 -> chon 5
-    veDuongTron(x, y, r, 7); // MAU XAM (7) thay cho TRANG de bot choi mat
+    int r = (clock() < thucAnLonExpire) ? 5 : 3;
+    veDuongTron(x, y, r, 7);\
     toMauDeQuy(x, y, 7, MAU_DEN); 
 }
 
+// Hàm vẽ các vật phẩm phụ trợ đặc biệt: Giày (tăng tốc), Thức ăn lớn (Bông tuyết Koch), Hoa ma (Ăn ma).
 void vePhuTro(int x, int y, int loai) {
     int banKinhLon = 18;
     if (loai == 1) { 
@@ -237,8 +232,8 @@ void vePhuTro(int x, int y, int loai) {
     } 
     else if (loai == 2) { 
         // CHUONG 3: UNG DUNG BONG TUYET KOCH VAO THUC AN LON
-        veBongTuyetKoch(x, y, 14, 3, MAU_VANG); // Ve vong ngoai bang Fractal
-        veDuongTron(x, y, 4, MAU_VANG);         // Loi sang o giua
+        veBongTuyetKoch(x, y, 14, 3, MAU_VANG);
+        veDuongTron(x, y, 4, MAU_VANG);
         toMauDeQuy(x, y, MAU_VANG, MAU_DEN); 
     }
     else if (loai == 3) { 
@@ -252,11 +247,12 @@ void vePhuTro(int x, int y, int loai) {
     }
 }
 
-// =================================================================
-// PHAN 4: XAY DUNG BAN DO & QUET TOA DO
-// =================================================================
+// PHAN 4:
+// Hàm kiểm tra xem tọa độ (x, y) có nằm trong vùng không gian (hình chữ nhật) được chỉ định hay không.
 bool isInside(int x, int y, int x1, int y1, int x2, int y2) { return (x >= x1 && x <= x2 && y >= y1 && y <= y2); }
 
+// Hàm kiểm tra điểm (x, y) có phải là vật cản (tường) trong mê cung hay không.
+// Hàm này phục vụ cho việc tính toán va chạm của Pac-Man và AI của Ma.
 bool laVatCan(int x, int y) {
     // 1. Khung ngoai
     if (x <= -450 || x >= 450 || y <= -330 || y >= 330) return true;
@@ -308,6 +304,7 @@ bool laVatCan(int x, int y) {
     return false; 
 }
 
+// Hàm duyệt qua lưới và vẽ tất cả các thức ăn, vật phẩm phụ trợ hiện đang có trên bản đồ.
 void drawAllFood() {
     int tamX = getmaxx() / 2 + 150, tamY = getmaxy() / 2;
     for (int i = 0; i < 15; i++) {
@@ -324,11 +321,13 @@ void drawAllFood() {
     if (hoaMaTonTai) vePhuTro(tamX, tamY - 300, 3); 
 }
 
+// Hàm phụ trợ dùng để vẽ các khối chướng ngại vật (tường) và tạo phần rỗng màu đen bên trong để nhìn rõ nét hơn.
 void veKhoi(int tamX, int tamY, int x1, int y1, int x2, int y2, int color = MAU_XANH_DUONG) {
     for(int i = y1 + 1; i < y2; i++) veDuongThang(tamX + x1 + 1, tamY + i, tamX + x2 - 1, tamY + i, MAU_DEN);
     veHinhChuNhat(tamX + x1, tamY + y1, tamX + x2, tamY + y2, color);
 }
 
+// Hàm vẽ cấu trúc mê cung, vẽ các khối tường và trang trí các họa tiết Fractal vào các khoảng trống.
 void drawMaze() {
     int tamX = getmaxx() / 2 + 150, tamY = getmaxy() / 2;
     veHinhChuNhat(tamX - 450, tamY - 330, tamX + 450, tamY + 330, MAU_XANH_DUONG);
@@ -372,10 +371,10 @@ void drawMaze() {
     veKhoi(tamX, tamY, -90, 90, 150, 150); veDuongThang(tamX - 29, tamY + 150, tamX + 29, tamY + 150, MAU_DEN); 
 
     // CHUONG 3: Ung dung Fractal ve cac hoa tiet duong cong vao khoang trong cua vat can
-    // 1. Duong cong C (C-Curve)
+    // 1. Duong cong C
     veDuongCongC(9, tamX - 25, tamY - 240, tamX + 25, tamY - 240, MAU_VANG);
     
-    // 2. Duong cong Rong (Dragon Curve)
+    // 2. Duong cong Rong
     veDuongCongRong(10, tamX - 25, tamY + 120, tamX + 45, tamY + 120, 1, MAU_XANH_LA);
     
     // 3. Duong cong Koch (Koch Curve)
@@ -384,10 +383,7 @@ void drawMaze() {
     veDuongKoch(4, tamX + 240, tamY + 255, tamX + 360, tamY + 255, MAU_PINK);
 }
 
-// =================================================================
-// PHAN 5: GIAO DIEN & MENU (XU LY TRONG SUOT CHU)
-// =================================================================
-
+// PHAN 5: GIAO DIEN & MENU
 void drawUIBenTrai() {
     int lX = 40, topY = 100;
 
@@ -416,10 +412,11 @@ void drawUIBenTrai() {
     // CHUONG 3: UNG DUNG CAY FRACTAL TRANG TRI NGOAI CANH
     setcolor(MAU_XANH_LA); settextstyle(3, 0, 2); 
     outtextxy(lX + 55, topY + 500, (char*)"[Rung Ma Thuat Fractal]");
-    // Ve cay fractal (goc pi/2 tuc la 1.57 huong len), bac 6, thu nho chieu cao (tu 45 -> 40)
+    // Ve cay fractal
     veCayFractal(lX + 150, topY + 650, 1.57, 40, 6, MAU_XANH_LA);
 }
 
+// Hàm vẽ màn hình menu chính của game, bao gồm tiêu đề, các lựa chọn và hình ảnh trang trí.
 void drawMenu() {
     cleardevice(); setbkcolor(MAU_DEN); 
     int tamX = getmaxx() / 2, tamY = getmaxy() / 2;
@@ -441,6 +438,7 @@ void drawMenu() {
     pieslice(tamX - textwidth(m1)/2 - 70, pacYM, 30, 330, pacSize); pieslice(tamX + textwidth(m1)/2 + 70, pacYM, 210, 150, pacSize); 
 }
 
+// Hàm hiển thị màn hình hướng dẫn chi tiết luật chơi và các vật phẩm phụ trợ cho người chơi.
 void showRules() {
     cleardevice(); setbkcolor(MAU_DEN); 
     int tamX = getmaxx() / 2, tamY = getmaxy() / 2;
@@ -474,6 +472,7 @@ void showRules() {
     getch();
 }
 
+// Hàm kiểm tra và lưu điểm kỷ lục mới vào tệp ky_luc.txt nếu điểm hiện tại vượt qua kỷ lục cũ.
 void capNhatKyLuc(int diemSo) {
     if (diemSo > kyLuc) {
         kyLuc = diemSo;
@@ -485,6 +484,7 @@ void capNhatKyLuc(int diemSo) {
     }
 }
 
+// Hàm hiển thị màn hình chiến thắng (Victory) khi người chơi đã ăn hết toàn bộ thức ăn trên bản đồ.
 void hienThiVictory(int diemSo) {
     mciSendString(TEXT("stop bgm"), NULL, 0, NULL);
     PlaySound(TEXT("game_victory.wav"), NULL, SND_FILENAME | SND_ASYNC);
@@ -508,6 +508,7 @@ void hienThiVictory(int diemSo) {
     getch();
 }
 
+// Hàm hiển thị màn hình thua cuộc (Game Over) khi Pac-Man chạm phải Ma.
 void hienThiGameOver(int diemSo) {
     mciSendString(TEXT("stop bgm"), NULL, 0, NULL);
     mciSendString(TEXT("open \"game_over.mp3\" type mpegvideo alias gameover"), NULL, 0, NULL);
@@ -532,13 +533,10 @@ void hienThiGameOver(int diemSo) {
     getch();
 }
 
-// =================================================================
-// PHAN 6: ENGINE GAME CHINH (DA THEM TRANG THAI "CHO" - READY STATE)
-// =================================================================
+// PHAN 6: ENGINE GAME CHINH
 void startGame() {
     mciSendString(TEXT("close gameover"), NULL, 0, NULL);
     mciSendString(TEXT("close bgm"), NULL, 0, NULL); 
-    // Bat buoc phai dung .mp3 vi trinh doc .wav cua he thong Windows ban dang bi loi
     mciSendString(TEXT("open \"nhac_nen.wav\" type mpegvideo alias bgm"), NULL, 0, NULL);
     mciSendString(TEXT("play bgm repeat"), NULL, 0, NULL);
 
@@ -678,12 +676,12 @@ void startGame() {
                     ma[i].isActive = true;
                     ma[i].x = tamX;
                     ma[i].y = tamY - 60;
-                    ma[i].huong = (rand() % 2 == 0) ? 0 : 2; // Chi re TRAI hoac PHAI luc ra khoi long
+                    ma[i].huong = (rand() % 2 == 0) ? 0 : 2;
                 }
             }
             int rx = pacX - tamX;
             int ry = pacY - tamY;
-            int r = 29; // Coi nhu Pacman kich thuoc 60 (ban kinh 29 de vua khit gap 60 ma khong loi)
+            int r = 29;
 
             // Cap nhat tocDo an toan CHI KHI dang o tam grid de tranh lech toa do
             if (rx % 60 == 0 && ry % 60 == 0) {
@@ -891,6 +889,7 @@ void startGame() {
     setvisualpage(0);
 }
 
+// Hàm main khởi tạo môi trường đồ họa, tải dữ liệu kỷ lục và điều hướng vòng lặp menu chính.
 int main() {
     FILE *f = fopen("ky_luc.txt", "r");
     if (f) {
